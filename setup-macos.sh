@@ -84,6 +84,8 @@ install_if_missing dbeaver-community cask
 install_if_missing bruno cask
 install_if_missing docker cask
 install_if_missing rectangle cask
+install_if_missing slack cask
+
 
 # --- Install Microsoft Apps ---
 
@@ -93,6 +95,8 @@ install_if_missing microsoft-outlook cask
 install_if_missing microsoft-onenote cask
 install_if_missing microsoft-word cask
 install_if_missing microsoft-excel cask
+install_if_missing microsoft-teams cask
+
 
 # --- Final Cleanup ---
 
