@@ -1,4 +1,5 @@
 #!/bin/bash
+#chmod +x setup_my_mac.sh
 
 # ========== TURBO PROFESSIONAL MAC SETUP SCRIPT (CUSTOM LIST) ==========
 
