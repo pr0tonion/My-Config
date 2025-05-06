@@ -4,43 +4,49 @@ return {
 	cmd = { "ConformInfo" },
 	keys = {
 		{
-			-- Customize or remove this keymap to your liking
-			"<leader>f",
+			"<leader>cf",
 			function()
-				require("conform").format({ async = true })
+				require("conform").format({
+					async = true,
+					callback = function(success)
+						if success then
+							vim.notify("Formatting complete!", vim.log.levels.INFO)
+						else
+							vim.notify("Formatting failed!", vim.log.levels.WARN)
+						end
+					end,
+				})
 			end,
 			mode = "",
-			desc = "Format buffer",
+			desc = "Format buffer with Conform",
 		},
 	},
-	-- This will provide type hinting with LuaLS
-	---@module "conform"
-	---@type conform.setupOpts
 	opts = {
-		-- Define your formatters
+		-- Define formatters by filetype
 		formatters_by_ft = {
 			lua = { "stylua" },
-			python = { "isort", "black" },
+			python = { "ruff", "black" },
 			javascript = { "prettierd", "prettier", stop_after_first = true },
 		},
-		-- Set default options
+		-- Add a fallback for unsupported filetypes
+		fallback_formatters = { "lsp_format" },
+		-- Default formatter options
 		default_format_opts = {
 			lsp_format = "fallback",
 		},
-		-- Set up format-on-save
-		format_on_save = { timeout_ms = 2000 },
-		-- Customize formatters
+		-- Format on save for specific filetypes
+		format_on_save = {
+			enable = true,
+			timeout_ms = 2000,
+		},
+		-- Customize individual formatters
 		formatters = {
-			shfmt = {
-				prepend_args = { "-i", "2" },
+			ruff = {
+				prepend_args = { "--line-length=120", "--fix", "--config=pyproject.toml" },
 			},
-			black = {
-				prepend_args = { '--fast' }
-			}
 		},
 	},
 	init = function()
-		-- If you want the formatexpr, here is the place to set it
 		vim.o.formatexpr = "v:lua.require'conform'.formatexpr()"
 	end,
 }
