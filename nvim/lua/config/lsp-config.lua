@@ -33,19 +33,20 @@ end
 
 -- Mason setup
 require("mason-lspconfig").setup({
+	automatic_enable = true,
 	ensure_installed = { "lua_ls", "ruff" }, -- Only install lua_ls and ruff
 	automatic_installation = true,        -- Automatically install missing servers
 })
 
 -- Mason LSP setup handlers
-require("mason-lspconfig").setup_handlers({
-	function(server_name) -- Default handler
-		lspconfig[server_name].setup({
-			capabilities = capabilities,
-			on_attach = on_attach,
-		})
-	end,
-})
+--require("mason-lspconfig").setup_handlers({
+--	function(server_name) -- Default handler
+--		lspconfig[server_name].setup({
+--			capabilities = capabilities,
+--			on_attach = on_attach,
+--		})
+--	end,
+--})
 
 -- Ruff setup
 lspconfig.ruff.setup({
