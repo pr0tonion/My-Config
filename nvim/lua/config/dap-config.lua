@@ -12,20 +12,47 @@ dap.adapters.python = {
   args = { '-m', 'debugpy.adapter' };
 }
 
--- Python debug configuration
 dap.configurations.python = {
+  -- 1. Launch main.py from root (this will be shown first)
   {
     type = 'python';
     request = 'launch';
-    name = 'Launch Script';
+    name = '🟢 Run main.py (project root)';
+    program = function()
+      local workspace = vim.lsp.buf.list_workspace_folders()[1]
+      return (workspace or vim.fn.getcwd()) .. '/main.py'
+    end;
+    console = 'integratedTerminal';
+    pythonPath = function()
+      return vim.fn.exepath('python')
+    end;
+  },
+
+  -- 2. Launch currently open file
+  {
+    type = 'python';
+    request = 'launch';
+    name = '📄 Run Current File';
     program = "${file}";
     console = 'integratedTerminal';
     pythonPath = function()
       return vim.fn.exepath('python')
     end;
   },
-}
 
+  -- 3. Launch with args (example)
+  {
+    type = 'python';
+    request = 'launch';
+    name = '⚙️ Run with Arguments';
+    program = "${file}";
+    args = { "arg1", "arg2" }; -- you can replace with dynamic logic if needed
+    console = 'integratedTerminal';
+    pythonPath = function()
+      return vim.fn.exepath('python')
+    end;
+  },
+}
 -- DAP UI auto open/close
 dap.listeners.before.attach.dapui_config = function()
   dapui.open()
