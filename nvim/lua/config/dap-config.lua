@@ -34,10 +34,10 @@ dap.listeners.before.launch.dapui_config = function()
   dapui.open()
 end
 dap.listeners.before.event_terminated.dapui_config = function()
-  dapui.close()
+  -- dapui.close()
 end
 dap.listeners.before.event_exited.dapui_config = function()
-  dapui.close()
+  -- dapui.close()
 end
 
 
@@ -63,7 +63,7 @@ map("n", "<leader>du", function() require("dapui").toggle() end, { desc = "Debug
 map("n", "<leader>dx", function() require("dap").terminate() end, { desc = "Debug: Terminate" })
 
 -- Conditional breakpoint
-map("n", "<leader>dc", function() 
+map("n", "<leader>dc", function()
   vim.ui.input({ prompt = "Condition: " }, function(condition)
     if condition then
       require("dap").set_breakpoint(condition)

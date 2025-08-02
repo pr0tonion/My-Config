@@ -1,5 +1,6 @@
 local lspconfig = require("lspconfig")
 local cmp_nvim_lsp = require("cmp_nvim_lsp")
+local mason_lspconfig = require("mason-lspconfig")
 
 -- Define capabilities once
 local capabilities = cmp_nvim_lsp.default_capabilities()
@@ -16,56 +17,47 @@ vim.diagnostic.config({
 	severity_sort = true,
 })
 
--- Common on_attach function with vim-like keybindings
-local on_attach = function(client, bufnr)
-	local opts = { noremap = true, silent = true, buffer = bufnr }
 
-	-- Vim-like LSP keybindings (following vim conventions)
-	vim.keymap.set("n", "gd", vim.lsp.buf.definition, { desc = "Go to definition", buffer = bufnr })
-	vim.keymap.set("n", "gD", vim.lsp.buf.declaration, { desc = "Go to declaration", buffer = bufnr })
-	vim.keymap.set("n", "gr", vim.lsp.buf.references, { desc = "Show references", buffer = bufnr })
-	vim.keymap.set("n", "gi", vim.lsp.buf.implementation, { desc = "Go to implementation", buffer = bufnr })
-	vim.keymap.set("n", "K", vim.lsp.buf.hover, { desc = "Show hover info", buffer = bufnr })
-	vim.keymap.set("n", "<C-k>", vim.lsp.buf.signature_help, { desc = "Signature help", buffer = bufnr })
-	
-	-- Diagnostics (vim-like with [ and ])
-	vim.keymap.set("n", "[d", vim.diagnostic.goto_prev, { desc = "Previous diagnostic", buffer = bufnr })
-	vim.keymap.set("n", "]d", vim.diagnostic.goto_next, { desc = "Next diagnostic", buffer = bufnr })
-	vim.keymap.set("n", "<leader>d", vim.diagnostic.open_float, { desc = "Show diagnostic", buffer = bufnr })
-	
-	-- Code actions and formatting
-	vim.keymap.set("n", "<leader>ca", vim.lsp.buf.code_action, { desc = "Code action", buffer = bufnr })
-	vim.keymap.set("n", "<leader>rn", vim.lsp.buf.rename, { desc = "Rename symbol", buffer = bufnr })
+local opts = { noremap = true, silent = true }
 
-	-- Formatting (if enabled by the LSP)
-	if client.server_capabilities.documentFormattingProvider then
-		vim.keymap.set("n", "<leader>f", vim.lsp.buf.format, { desc = "Format code", buffer = bufnr })
-	end
-end
+-- Vim-like LSP keybindings (following vim conventions)
+vim.keymap.set("n", "gd", vim.lsp.buf.definition, { desc = "Go to definition" })
+vim.keymap.set("n", "gD", vim.lsp.buf.declaration, { desc = "Go to declaration" })
+vim.keymap.set("n", "gr", vim.lsp.buf.references, { desc = "Show references" })
+vim.keymap.set("n", "gi", vim.lsp.buf.implementation, { desc = "Go to implementation" })
+vim.keymap.set("n", "K", vim.lsp.buf.hover, { desc = "Show hover info" })
+vim.keymap.set("n", "<C-k>", vim.lsp.buf.signature_help, { desc = "Signature help" })
 
--- Mason setup
-require("mason-lspconfig").setup({
-	automatic_enable = true,
-	ensure_installed = { "lua_ls", "ruff" }, -- Only install lua_ls and ruff
-	automatic_installation = true,        -- Automatically install missing servers
+-- Diagnostics (vim-like with [ and ])
+vim.keymap.set("n", "[d", vim.diagnostic.goto_prev, { desc = "Previous diagnostic" })
+vim.keymap.set("n", "]d", vim.diagnostic.goto_next, { desc = "Next diagnostic" })
+vim.keymap.set("n", "<leader>x", vim.diagnostic.open_float, { desc = "Show diagnostic" })
+
+-- Code actions and formatting
+vim.keymap.set("n", "<leader>ca", vim.lsp.buf.code_action, { desc = "Code action" })
+vim.keymap.set("n", "<leader>rn", vim.lsp.buf.rename, { desc = "Rename symbol" })
+
+vim.lsp.config('lua_ls', {
+  settings = {
+    Lua = {
+      runtime = {
+        version = 'LuaJIT',
+      },
+      diagnostics = {
+        globals = {
+          'vim',
+          'require',
+        },
+      },
+    },
+  },
 })
 
--- Mason LSP setup handlers
---require("mason-lspconfig").setup_handlers({
---	function(server_name) -- Default handler
---		lspconfig[server_name].setup({
---			capabilities = capabilities,
---			on_attach = on_attach,
---		})
---	end,
---})
-
--- Ruff setup
-lspconfig.ruff.setup({
-	init_options = {
-		settings = {
-			args = { "--ignore=E501" }, -- "--config=/path/to/pyproject.toml"  -- Use pyproject.toml for config
-		},
-	},
-	on_attach = on_attach,
+mason_lspconfig.setup({
+    ensure_installed = {
+        "lua_ls", -- Lua Language Server
+        "pyright", -- Python Language Server
+        "ruff", -- Python linter
+    },
 })
+
