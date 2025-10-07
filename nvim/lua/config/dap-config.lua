@@ -12,6 +12,23 @@ dap.adapters.python = {
   args = { '-m', 'debugpy.adapter' };
 }
 
+dap.configurations.java = {
+  {
+    type = 'java';
+    request = 'launch';
+    name = "Launch Current File";
+    mainClass = function()
+      return vim.fn.input('Main Class > ', vim.fn.getcwd() .. '.', 'file')
+    end;
+    projectName = function()
+      return vim.fn.fnamemodify(vim.fn.getcwd(), ':p:h:t')
+    end;
+    args = function()
+      local input = vim.fn.input('Program arguments: ')
+      return vim.split(input, " +")
+    end;
+  },
+}
 dap.configurations.python = {
   -- 1. Launch main.py from root (this will be shown first)
   {
@@ -40,18 +57,27 @@ dap.configurations.python = {
     end;
   },
 
-  -- 3. Launch with args (example)
-  {
-    type = 'python';
-    request = 'launch';
-    name = '⚙️ Run with Arguments';
-    program = "${file}";
-    args = { "arg1", "arg2" }; -- you can replace with dynamic logic if needed
-    console = 'integratedTerminal';
-    pythonPath = function()
-      return vim.fn.exepath('python')
-    end;
-  },
+{
+  type = 'python';
+  request = 'launch';
+  name = '🧪 Run Tests (unittest via debugpy)';
+  module = 'unittest';
+  args = function()
+    local file = vim.fn.expand('%:p')
+    -- Run current test file if you're in one
+    if file:match('test_.*%.py$') or file:match('.*/tests?/.*%.py$') then
+      return { file }
+    else
+      -- Otherwise run discovery in tests/ folder
+      return { 'discover', '-s', 'tests' }
+    end
+  end;
+  console = 'integratedTerminal';
+  justMyCode = false;
+  pythonPath = function()
+    return vim.fn.exepath('python')
+  end;
+},
 }
 -- DAP UI auto open/close
 dap.listeners.before.attach.dapui_config = function()
